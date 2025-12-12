@@ -22,6 +22,8 @@ This is a simple Go web service that consumes GitHub webhook push notifications.
 
 - `main.go`: Contains the webhook handler and server setup
 - `go.mod`: Go module definition
+- `README.md`: Project documentation
+- `*_test.go`: Test files (follow this naming convention)
 
 ## Testing
 
@@ -40,5 +42,5 @@ This is a simple Go web service that consumes GitHub webhook push notifications.
 
 - Always validate request methods
 - Handle errors gracefully
-- Close request bodies properly with `defer r.Body.Close()`
+- Use `defer r.Body.Close()` for explicit resource management
 - Log errors for debugging without exposing sensitive information
