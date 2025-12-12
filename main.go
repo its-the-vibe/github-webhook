@@ -14,12 +14,13 @@ func webhookHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	defer r.Body.Close()
+
 	body, err := io.ReadAll(r.Body)
 	if err != nil {
 		http.Error(w, "Error reading request body", http.StatusBadRequest)
 		return
 	}
-	defer r.Body.Close()
 
 	var payload interface{}
 	err = json.Unmarshal(body, &payload)
@@ -37,7 +38,9 @@ func webhookHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.WriteHeader(http.StatusOK)
-	w.Write([]byte("Webhook received"))
+	if _, err := w.Write([]byte("Webhook received")); err != nil {
+		log.Printf("Error writing response: %v\n", err)
+	}
 }
 
 func main() {
