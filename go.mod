@@ -1,3 +1,3 @@
 module github.com/its-the-vibe/github-webhook
 
-go 1.24.11
+go 1.25.5
