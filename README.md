@@ -1,6 +1,6 @@
 # github-webhook
 
-A simple web service which consumes GitHub webhook push notifications with signature verification support.
+A simple web service which consumes GitHub webhook push notifications and publishes to Redis pub/sub
 
 ## Features
 
