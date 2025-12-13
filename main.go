@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"crypto/hmac"
 	"crypto/sha256"
 	"encoding/hex"
@@ -11,9 +12,13 @@ import (
 	"net/http"
 	"os"
 	"strings"
+
+	"github.com/redis/go-redis/v9"
 )
 
 var webhookSecret []byte
+var redisClient *redis.Client
+var redisChannel string
 
 func verifySignature(payload []byte, signature string) bool {
 	if len(webhookSecret) == 0 {
@@ -77,6 +82,18 @@ func webhookHandler(w http.ResponseWriter, r *http.Request) {
 		fmt.Println(string(jsonOutput))
 	}
 
+	// Publish to Redis if client is configured
+	if redisClient != nil {
+		ctx := context.Background()
+		err = redisClient.Publish(ctx, redisChannel, body).Err()
+		if err != nil {
+			log.Printf("Error publishing to Redis: %v\n", err)
+			// Don't fail the request if Redis publish fails
+		} else {
+			log.Printf("Published webhook to Redis channel: %s\n", redisChannel)
+		}
+	}
+
 	w.WriteHeader(http.StatusOK)
 	if _, err := w.Write([]byte("Webhook received")); err != nil {
 		log.Printf("Error writing response: %v\n", err)
@@ -92,6 +109,40 @@ func main() {
 	} else {
 		webhookSecret = []byte(strings.TrimSpace(string(secretData)))
 		log.Println("Webhook secret loaded. Signature verification enabled.")
+	}
+
+	// Configure Redis connection
+	redisHost := os.Getenv("REDIS_HOST")
+	redisPort := os.Getenv("REDIS_PORT")
+	redisChannel = os.Getenv("REDIS_CHANNEL")
+
+	// Set defaults
+	if redisHost == "" {
+		redisHost = "localhost"
+	}
+	if redisPort == "" {
+		redisPort = "6379"
+	}
+	if redisChannel == "" {
+		redisChannel = "github-webhook"
+	}
+
+	// Initialize Redis client
+	redisAddr := fmt.Sprintf("%s:%s", redisHost, redisPort)
+	redisClient = redis.NewClient(&redis.Options{
+		Addr: redisAddr,
+	})
+
+	// Test Redis connection
+	ctx := context.Background()
+	_, err = redisClient.Ping(ctx).Result()
+	if err != nil {
+		log.Printf("Warning: Could not connect to Redis at %s: %v\n", redisAddr, err)
+		log.Println("Redis publishing will be disabled. Webhook will continue to work without Redis.")
+		redisClient = nil
+	} else {
+		log.Printf("Connected to Redis at %s\n", redisAddr)
+		log.Printf("Will publish webhooks to channel: %s\n", redisChannel)
 	}
 
 	http.HandleFunc("/webhook", webhookHandler)
