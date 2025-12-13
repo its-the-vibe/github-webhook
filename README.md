@@ -6,7 +6,9 @@ A simple web service which consumes GitHub webhook push notifications with signa
 
 - Receives and parses GitHub webhook POST requests
 - Verifies GitHub webhook signatures using HMAC SHA256
+- Publishes webhook payloads to Redis pub/sub
 - Configurable port via environment variable
+- Configurable Redis connection via environment variables
 - Docker and Docker Compose support for easy deployment
 - Logs formatted JSON payloads to console
 
@@ -22,6 +24,26 @@ The server port can be configured via the `PORT` environment variable. If not se
 
 # Run on custom port
 PORT=3000 ./webhook-server
+```
+
+### Redis Configuration
+
+The webhook service can publish received webhooks to a Redis pub/sub channel. This is useful for integrating with other services that subscribe to the Redis channel.
+
+**Environment Variables:**
+
+- `REDIS_HOST`: Redis server hostname (default: `localhost`)
+- `REDIS_PORT`: Redis server port (default: `6379`)
+- `REDIS_CHANNEL`: Redis pub/sub channel name (default: `github-webhook`)
+
+**Note:** If the Redis connection fails, the application will log a warning and continue to work without Redis publishing. This ensures the webhook service remains operational even if Redis is unavailable.
+
+```bash
+# Run with Redis configuration
+REDIS_HOST=redis.example.com REDIS_PORT=6379 REDIS_CHANNEL=my-webhooks ./webhook-server
+
+# Run with default Redis settings (connects to localhost:6379)
+./webhook-server
 ```
 
 ### Webhook Secret
@@ -63,6 +85,9 @@ go build -o webhook-server
 
 # Run with custom port
 PORT=3000 ./webhook-server
+
+# Run with Redis configuration
+REDIS_HOST=redis.example.com REDIS_PORT=6379 REDIS_CHANNEL=my-webhooks ./webhook-server
 ```
 
 ### Using Docker
@@ -79,6 +104,9 @@ docker run -p 3000:8080 -e PORT=8080 github-webhook
 
 # Run with secret file
 docker run -p 8080:8080 -v $(pwd)/.secret:/app/.secret:ro github-webhook
+
+# Run with Redis configuration (connecting to Redis on host machine)
+docker run -p 8080:8080 -e REDIS_HOST=host.docker.internal -e REDIS_PORT=6379 github-webhook
 ```
 
 ### Using Docker Compose
@@ -100,6 +128,12 @@ To use a custom port with Docker Compose, set the `PORT` environment variable:
 
 ```bash
 PORT=3000 docker-compose up -d
+```
+
+To configure Redis connection with Docker Compose, you can set environment variables:
+
+```bash
+REDIS_HOST=192.168.1.100 REDIS_PORT=6379 REDIS_CHANNEL=my-webhooks docker-compose up -d
 ```
 
 The docker-compose configuration automatically mounts the `.secret` file if it exists.

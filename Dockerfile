@@ -1,13 +1,16 @@
 # Build stage
 FROM golang:1.25-alpine AS builder
 
+# Install CA certificates for HTTPS
+RUN apk add --no-cache ca-certificates git
+
 WORKDIR /app
 
 # Copy go mod files
-COPY go.mod ./
+COPY go.mod go.sum ./
 
-# Download dependencies
-RUN go mod download
+# Download dependencies with direct mode to bypass proxy issues
+RUN GOPROXY=direct go mod download
 
 # Copy source code
 COPY *.go ./
