@@ -1,0 +1,11 @@
+services:
+  webhook:
+    build: .
+    ports:
+      - "${PORT:-8080}:8080"
+    environment:
+      - PORT=8080
+    volumes:
+      # Mount .secret file if it exists (optional)
+      - ./.secret:/app/.secret:ro
+    restart: unless-stopped
