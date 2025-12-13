@@ -36,7 +36,7 @@ func verifySignature(payload []byte, signature string) bool {
 	}
 
 	signatureHash := strings.TrimPrefix(signature, "sha256=")
-	
+
 	mac := hmac.New(sha256.New, webhookSecret)
 	mac.Write(payload)
 	expectedMAC := mac.Sum(nil)
@@ -152,7 +152,7 @@ func main() {
 	if port == "" {
 		port = "8080"
 	}
-	
+
 	// Ensure port has colon prefix
 	if !strings.HasPrefix(port, ":") {
 		port = ":" + port
