@@ -19,7 +19,7 @@ COPY *.go ./
 RUN CGO_ENABLED=0 GOOS=linux go build -o webhook-server
 
 # Final stage
-FROM alpine:latest
+FROM scratch
 
 WORKDIR /app
 
