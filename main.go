@@ -35,7 +35,6 @@ type EventConfig struct {
 
 var webhookSecret []byte
 var redisClient *redis.Client
-var redisChannel string
 var currentLogLevel LogLevel = INFO
 var eventConfigs []EventConfig
 var eventChannelMap map[string]string
