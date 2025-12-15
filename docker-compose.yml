@@ -8,10 +8,13 @@ services:
       - "${PORT:-8080}:8080"
     environment:
       - PORT=8080
+      - LOG_LEVEL=${LOG_LEVEL:-INFO}
+      - CONFIG_FILE=${CONFIG_FILE:-/app/config.json}
       - REDIS_HOST=${REDIS_HOST:-host.docker.internal}
       - REDIS_PORT=${REDIS_PORT:-6379}
-      - REDIS_CHANNEL=${REDIS_CHANNEL:-github-webhook}
     volumes:
       # Mount .secret file if it exists (optional)
       - ./.secret:/app/.secret:ro
+      # Mount config.json file (required)
+      - ./config.json:/app/config.json:ro
     restart: unless-stopped
