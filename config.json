@@ -1,0 +1,10 @@
+[
+  {
+    "github-event-type": "push",
+    "channel": "github-webhook-push"
+  },
+  {
+    "github-event-type": "pull_request",
+    "channel": "github-webhook-pull-request"
+  }
+]

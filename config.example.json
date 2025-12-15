@@ -1,0 +1,38 @@
+[
+  {
+    "github-event-type": "push",
+    "channel": "github-webhook-push"
+  },
+  {
+    "github-event-type": "pull_request",
+    "channel": "github-webhook-pull-request"
+  },
+  {
+    "github-event-type": "issues",
+    "channel": "github-webhook-issues"
+  },
+  {
+    "github-event-type": "issue_comment",
+    "channel": "github-webhook-issue-comment"
+  },
+  {
+    "github-event-type": "pull_request_review",
+    "channel": "github-webhook-pr-review"
+  },
+  {
+    "github-event-type": "pull_request_review_comment",
+    "channel": "github-webhook-pr-review-comment"
+  },
+  {
+    "github-event-type": "create",
+    "channel": "github-webhook-create"
+  },
+  {
+    "github-event-type": "delete",
+    "channel": "github-webhook-delete"
+  },
+  {
+    "github-event-type": "release",
+    "channel": "github-webhook-release"
+  }
+]
