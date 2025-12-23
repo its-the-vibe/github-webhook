@@ -188,7 +188,7 @@ func webhookHandler(w http.ResponseWriter, r *http.Request) {
 	if redisClient != nil {
 		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 		defer cancel()
-		
+
 		err = redisClient.Publish(ctx, channel, body).Err()
 		if err != nil {
 			logError("Error publishing to Redis channel '%s': %v", channel, err)
@@ -240,6 +240,7 @@ func main() {
 	// Configure Redis connection
 	redisHost := os.Getenv("REDIS_HOST")
 	redisPort := os.Getenv("REDIS_PORT")
+	redisPassword := os.Getenv("REDIS_PASSWORD")
 
 	// Set defaults
 	if redisHost == "" {
@@ -252,7 +253,8 @@ func main() {
 	// Initialize Redis client
 	redisAddr := fmt.Sprintf("%s:%s", redisHost, redisPort)
 	redisClient = redis.NewClient(&redis.Options{
-		Addr: redisAddr,
+		Addr:     redisAddr,
+		Password: redisPassword, // empty string means no password
 	})
 
 	// Test Redis connection

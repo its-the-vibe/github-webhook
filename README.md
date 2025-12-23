@@ -98,18 +98,24 @@ PORT=3000 ./webhook-server
 
 The webhook service publishes received webhooks to Redis pub/sub channels based on the event configuration. Each event type is routed to its configured channel.
 
+
 **Environment Variables:**
 
 - `REDIS_HOST`: Redis server hostname (default: `localhost`)
 - `REDIS_PORT`: Redis server port (default: `6379`)
+- `REDIS_PASSWORD`: Redis server password (optional; default: unset)
 
 **Note:** If the Redis connection fails, the application will log a warning and continue to work without Redis publishing. This ensures the webhook service remains operational even if Redis is unavailable.
+
 
 ```bash
 # Run with Redis configuration
 REDIS_HOST=redis.example.com REDIS_PORT=6379 ./webhook-server
 
-# Run with default Redis settings (connects to localhost:6379)
+# Run with Redis password
+REDIS_HOST=redis.example.com REDIS_PORT=6379 REDIS_PASSWORD=yourpassword ./webhook-server
+
+# Run with default Redis settings (connects to localhost:6379, no password)
 ./webhook-server
 ```
 
@@ -186,6 +192,9 @@ docker run -p 8080:8080 -v $(pwd)/.secret:/app/.secret:ro -v $(pwd)/config.json:
 
 # Run with Redis configuration (connecting to Redis on host machine)
 docker run -p 8080:8080 -e REDIS_HOST=host.docker.internal -e REDIS_PORT=6379 -v $(pwd)/config.json:/app/config.json:ro github-webhook
+
+# Run with Redis password
+docker run -p 8080:8080 -e REDIS_HOST=host.docker.internal -e REDIS_PORT=6379 -e REDIS_PASSWORD=yourpassword -v $(pwd)/config.json:/app/config.json:ro github-webhook
 ```
 
 ### Using Docker Compose
@@ -217,6 +226,9 @@ CONFIG_FILE=/path/to/config.json docker-compose up -d
 
 # Redis configuration
 REDIS_HOST=192.168.1.100 REDIS_PORT=6379 docker-compose up -d
+
+# Redis password
+REDIS_PASSWORD=yourpassword docker-compose up -d
 ```
 
 The docker-compose configuration automatically mounts the `.secret` and `config.json` files if they exist.
