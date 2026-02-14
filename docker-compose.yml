@@ -19,4 +19,4 @@ services:
       - ./.secret:/app/.secret:ro
       # Mount config.json file (required)
       - ./config.json:/app/config.json:ro
-    restart: unless-stopped
+    restart: on-failure:10
