@@ -147,6 +147,21 @@ your-secret-token-here
 
 ## Building and Running
 
+### Makefile
+
+A `Makefile` is included to standardize common developer tasks:
+
+```bash
+# Build the application
+make build
+
+# Run all unit tests
+make test
+
+# Check code formatting
+make lint
+```
+
 ### Local Development
 
 ```bash
@@ -257,7 +272,10 @@ Accepts GitHub webhook notifications. The event type is determined from the `X-G
 ## Testing
 
 ```bash
-# Run all tests
+# Run all tests via Make
+make test
+
+# Or run directly with Go
 go test ./...
 ```
 
