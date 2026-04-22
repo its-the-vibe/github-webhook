@@ -1,5 +1,7 @@
 # github-webhook
 
+[![CI](https://github.com/its-the-vibe/github-webhook/actions/workflows/ci.yaml/badge.svg)](https://github.com/its-the-vibe/github-webhook/actions/workflows/ci.yaml)
+
 A simple web service which consumes GitHub webhook push notifications and publishes to Redis pub/sub
 
 ## Features
