@@ -2,6 +2,8 @@ services:
   webhook:
     build: .
     read_only: true
+    image: ghcr.io/it-the-vibe/github-webhook:latest
+    pull_policy: always
     extra_hosts:
       - "host.docker.internal:host-gateway"
     ports:
