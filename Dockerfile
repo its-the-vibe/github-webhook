@@ -1,33 +1,34 @@
 # Build stage
-FROM golang:1.27.0-alpine AS builder
+FROM --platform=$BUILDPLATFORM golang:1.27.0-alpine AS builder
 
-# Install CA certificates for HTTPS
-RUN apk add --no-cache ca-certificates git
+ARG TARGETOS
+ARG TARGETARCH
 
-WORKDIR /app
+WORKDIR /build
 
 # Copy go mod files
 COPY go.mod go.sum ./
 
-# Download dependencies with direct mode to bypass proxy issues
-RUN GOPROXY=direct go mod download
+RUN go mod download
 
 # Copy source code
 COPY *.go ./
 
 # Build the application
-RUN CGO_ENABLED=0 GOOS=linux go build -o webhook-server
+RUN CGO_ENABLED=0 GOOS=${TARGETOS} GOARCH=${TARGETARCH} go build -o webhook-server
 
 # Final stage
-FROM scratch
+FROM gcr.io/distroless/static-debian13:nonroot
 
 WORKDIR /app
 
 # Copy the binary from builder
-COPY --from=builder /app/webhook-server .
+COPY --from=builder /build/webhook-server .
 
 # Expose port (default 8080, can be overridden)
 EXPOSE 8080
+
+USER nonroot:nonroot
 
 # Run the application
 CMD ["./webhook-server"]
